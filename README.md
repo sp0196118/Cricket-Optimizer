@@ -47,14 +47,8 @@ streamlit run app.py
 | All-Rounders | ≥ 1 |
 | Wicket-Keeper | = 1 |
 
-## 💼 Interview Talking Points
-1. Why ILP over greedy? *(ILP guarantees global optimum; greedy can miss synergies across roles)*
-2. How are performance scores computed? *(MinMax normalisation + role-specific linear combination)*
-3. How would you add pitch-type dependency? *(Add separate models for spin vs pace pitches; solve two ILPs and compare)*
-
 ## 📁 Files
 ```
-02_cricket_team_selector/
 ├── cricket_selector.py    # Full pipeline
 ├── app.py                 # Streamlit dashboard
 ├── requirements.txt
