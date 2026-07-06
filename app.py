@@ -23,11 +23,12 @@ with st.sidebar:
     min_bat    = st.slider("Min Batsmen", 2, 5, 3)
     min_bowl   = st.slider("Min Bowlers", 2, 5, 3)
     min_ar     = st.slider("Min All-Rounders", 1, 3, 1)
+    
     if "run_optimizer" not in st.session_state:
         st.session_state.run_optimizer = False
 
-   if st.button("🚀 Run Optimizer", type="primary"):
-       st.session_state.run_optimizer = True
+    if st.button("🚀 Run Optimizer", type="primary"):
+        st.session_state.run_optimizer = True
 
 def generate_players(n, seed=42):
     random.seed(seed); np.random.seed(seed)
