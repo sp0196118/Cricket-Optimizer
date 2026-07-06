@@ -23,7 +23,11 @@ with st.sidebar:
     min_bat    = st.slider("Min Batsmen", 2, 5, 3)
     min_bowl   = st.slider("Min Bowlers", 2, 5, 3)
     min_ar     = st.slider("Min All-Rounders", 1, 3, 1)
-    run = st.button("🚀 Select Best XI", type="primary")
+    if "run_optimizer" not in st.session_state:
+    st.session_state.run_optimizer = False
+
+   if st.button("🚀 Run Optimizer", type="primary"):
+    st.session_state.run_optimizer = True
 
 def generate_players(n, seed=42):
     random.seed(seed); np.random.seed(seed)
@@ -48,12 +52,12 @@ def generate_players(n, seed=42):
 def compute_score(df):
     df = df.copy()
     scaler = MinMaxScaler()
-    bat_n  = scaler.fit_transform(df[["batting_avg"]])
-    sr_n   = scaler.fit_transform(df[["strike_rate"]])
-    ba_n   = 1 - scaler.fit_transform(df[["bowling_avg"]])
-    ec_n   = 1 - scaler.fit_transform(df[["economy_rate"]])
-    wk_n   = scaler.fit_transform(df[["wickets_season"]])
-    fi_n   = scaler.fit_transform(df[["fielding_rating"]])
+    bat_n = scaler.fit_transform(df[["batting_avg"]]).ravel()
+    sr_n = scaler.fit_transform(df[["strike_rate"]]).ravel()
+    ba_n = (1 - scaler.fit_transform(df[["bowling_avg"]])).ravel()
+    ec_n = (1 - scaler.fit_transform(df[["economy_rate"]])).ravel()
+    wk_n = scaler.fit_transform(df[["wickets_season"]]).ravel()
+    fi_n = scaler.fit_transform(df[["fielding_rating"]]).ravel()
     scores = []
     for idx in range(len(df)):
         r = df.iloc[idx]
@@ -61,11 +65,11 @@ def compute_score(df):
         elif r.role == "Bowler":   s = 0.30*ba_n[idx]+0.30*ec_n[idx]+0.20*wk_n[idx]+0.10*r.recent_form+0.10*fi_n[idx]
         elif r.role == "All-Rounder": s = 0.20*bat_n[idx]+0.15*sr_n[idx]+0.20*ba_n[idx]+0.15*ec_n[idx]+0.15*r.recent_form+0.15*wk_n[idx]
         else: s = 0.40*bat_n[idx]+0.25*sr_n[idx]+0.20*r.consistency+0.15*r.recent_form
-        scores.append(round(float(s)*100, 2))
+        scores.append(round(s * 100, 2))
     df["score"] = scores
     return df
 
-if run:
+if st.session_state.run_optimizer:
     players = compute_score(generate_players(n_players))
     I = list(players.index)
     score_d  = players["score"].to_dict()
